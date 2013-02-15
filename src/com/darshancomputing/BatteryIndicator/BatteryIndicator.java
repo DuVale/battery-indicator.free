@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -65,6 +66,9 @@ public class BatteryIndicator extends Activity {
     private Button battery_use_b;
     private Button upgrade_donate_b;
 
+    private static final String LTAG = "BatteryIndicatorActivity";
+    private L l = new L(LTAG);
+
     private static final int DIALOG_CONFIRM_DISABLE_KEYGUARD = 0;
     private static final int DIALOG_CONFIRM_CLOSE = 1;
     private static final int DIALOG_FIRST_RUN = 2;
@@ -79,8 +83,10 @@ public class BatteryIndicator extends Activity {
     private final BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            l.i("onReceive()");
             String action = intent.getAction();
             if (! Intent.ACTION_BATTERY_CHANGED.equals(action)) return;
+            l.i("Indeed ACTION_BATTERY_CHANGED");
 
             int level = intent.getIntExtra("level", -1);
             int scale = intent.getIntExtra("scale", 100);
@@ -92,12 +98,14 @@ public class BatteryIndicator extends Activity {
             mHandler.postDelayed(mUpdateStatus, 1 * 1000);
             /* Just in case 1 second wasn't enough */
             mHandler.postDelayed(mUpdateStatus, 4 * 1000);
+            l.i("end of onReceive()");
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        l.i("onCreate()");
         setContentView(R.layout.main);
 
         res = getResources();
@@ -123,23 +131,28 @@ public class BatteryIndicator extends Activity {
 
         if (! res.getBoolean(R.bool.show_main_title))
             setTitle("");
+
+        l.i("end of onCreate()");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        l.i("onDestroy()");
         unbindService(biServiceConnection);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        l.i("onResume()");
         registerReceiver(mBatteryInfoReceiver, batteryChangedFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        l.i("onPause()");
         unregisterReceiver(mBatteryInfoReceiver);
     }
 

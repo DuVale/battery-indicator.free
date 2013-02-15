@@ -45,7 +45,8 @@ public class BatteryIndicatorService extends Service {
     private Resources res;
     private Str str;
 
-    private static final String LOG_TAG = "BatteryIndicatorService";
+    private static final String LTAG = "BatteryIndicatorService";
+    private L l = new L(LTAG);
 
 
     private static final int STATUS_UNPLUGGED     = 0;
@@ -80,9 +81,13 @@ public class BatteryIndicatorService extends Service {
     private static final int chargingIcon0 = R.drawable.charging000;
     private static final int small_chargingIcon0 = R.drawable.small_charging000;
 
+    static {
+        Log.i(LTAG, "Static block");
+    }
+
     @Override
     public void onCreate() {
-        //android.os.Debug.startMethodTracing();
+        l.i("onCreate()");
 
         res = getResources();
         str = new Str();
@@ -101,6 +106,7 @@ public class BatteryIndicatorService extends Service {
 
     @Override
     public void onDestroy() {
+        l.i("onDestroy()");
         setEnablednessOfKeyguard(true);
 
         unregisterReceiver(mBatteryInfoReceiver);
@@ -109,6 +115,7 @@ public class BatteryIndicatorService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        l.i("onBind()");
         return mBinder;
     }
 
@@ -124,7 +131,9 @@ public class BatteryIndicatorService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            l.i("onReceive()");
             if (! Intent.ACTION_BATTERY_CHANGED.equals(action)) return;
+            l.i("Indeed ACTION_BATTERY_CHANGED");
 
             int level = intent.getIntExtra("level", 0);
             int scale = intent.getIntExtra("scale", 100);
@@ -137,14 +146,17 @@ public class BatteryIndicatorService extends Service {
 
             int percent = level * 100 / scale;
 
+            l.i("hack start");
             java.io.File hack_file = new java.io.File("/sys/class/power_supply/battery/charge_counter");
             if (hack_file.exists()) {
+                l.i("hack file exists");
                 try {
                     java.io.FileReader fReader = new java.io.FileReader(hack_file);
                     java.io.BufferedReader bReader = new java.io.BufferedReader(fReader, 8);
                     String line = bReader.readLine();
                     bReader.close();
                     int charge_counter = Integer.valueOf(line);
+                    l.i("charge_counter: " + charge_counter);
 
                     if (charge_counter < percent + 10 && charge_counter > percent - 10) {
                         if (charge_counter > 100) // This happens
@@ -154,22 +166,26 @@ public class BatteryIndicatorService extends Service {
                             charge_counter = 0;
 
                         percent = charge_counter;
+                        l.i("set percent to: " + percent);
                     } else {
-                        Log.e(LOG_TAG, "charge_counter file exists but with value " + charge_counter +
+                        l.e("charge_counter file exists but with value " + charge_counter +
                               " which is inconsistent with percent: " + percent);
                     }
                 } catch (java.io.FileNotFoundException e) {
                     /* These error messages are only really useful to me and might as well be left hardwired here in English. */
-                    Log.e(LOG_TAG, "charge_counter file doesn't exist");
+                    l.e("charge_counter file doesn't exist");
                     e.printStackTrace();
                 } catch (java.io.IOException e) {
-                    Log.e(LOG_TAG, "Error reading charge_counter file");
+                    l.e("Error reading charge_counter file");
                     e.printStackTrace();
                 } catch (NumberFormatException e) {
-                    Log.e(LOG_TAG, "Read charge_counter file but couldn't convert contents to int");
+                    l.e("Read charge_counter file but couldn't convert contents to int");
                     e.printStackTrace();
                 }
+            } else {
+                l.i("hack file does NOT exist");
             }
+            l.i("hack end");
 
             if (status  > STATUS_MAX) status  = STATUS_UNKNOWN;
             if (health  > HEALTH_MAX) health  = HEALTH_UNKNOWN;
@@ -305,6 +321,7 @@ public class BatteryIndicatorService extends Service {
             notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 
             startForeground(1, notification);
+            l.i("end of onReceive()");
         }
     };
 

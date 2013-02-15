@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string formatted="false" name="diagnostic_full_name">Battery Indicator Diagnostic Build</string>
   <string formatted="false" name="app_full_name">Battery Indicator Pro</string>
   <string formatted="false" name="app_full_name_free">Battery Indicator</string>
   <string formatted="false" name="settings_activity_name_free">Battery Indicator - Settings</string><!-- depricated -->

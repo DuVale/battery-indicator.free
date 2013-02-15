@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.darshancomputing.BatteryIndicator"
-          android:versionCode="011074"
-          android:versionName="7.0.6"
+          android:versionCode="011075"
+          android:versionName="7.0.6-diagnostic"
 >
-  <application android:label="@string/app_full_name_free"
+  <application android:label="@string/diagnostic_full_name"
                android:icon="@drawable/battery"
                android:hardwareAccelerated="true"
   >
     <activity android:name=".BatteryIndicator"
-              android:label="@string/app_full_name_free"
+              android:label="@string/diagnostic_full_name"
               android:theme="@style/bi_theme"
               android:screenOrientation="unspecified"
               android:stateNotNeeded="true"
