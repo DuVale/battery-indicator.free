@@ -10,6 +10,11 @@
         android:title="@string/menu_help"
         android:showAsAction="always|withText"
   />
+  <item android:id="@+id/menu_send_logs"
+        android:icon="@+android:drawable/ic_menu_send"
+        android:title="Send diagnostics"
+        android:showAsAction="never"
+  />
   <item android:id="@+id/menu_close"
         android:icon="@+android:drawable/ic_menu_close_clear_cancel"
         android:title="@string/menu_close"

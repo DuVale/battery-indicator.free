@@ -45,8 +45,8 @@ public class BatteryIndicatorService extends Service {
     private Resources res;
     private Str str;
 
-    private static final String LTAG = "BatteryIndicatorService";
-    private L l = new L(LTAG);
+    public static final String LOG_TAG = "BatteryIndicatorService";
+    private L l = new L(LOG_TAG);
 
 
     private static final int STATUS_UNPLUGGED     = 0;
@@ -82,7 +82,7 @@ public class BatteryIndicatorService extends Service {
     private static final int small_chargingIcon0 = R.drawable.small_charging000;
 
     static {
-        Log.i(LTAG, "Static block");
+        Log.i(LOG_TAG, "Static block");
     }
 
     @Override
@@ -131,7 +131,7 @@ public class BatteryIndicatorService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            l.i("onReceive()");
+            l.i("start of onReceive()");
             if (! Intent.ACTION_BATTERY_CHANGED.equals(action)) return;
             l.i("Indeed ACTION_BATTERY_CHANGED");
 
@@ -145,6 +145,11 @@ public class BatteryIndicatorService extends Service {
             //String technology = intent.getStringExtra("technology");
 
             int percent = level * 100 / scale;
+
+            l.i("percent: " + percent);
+            l.i("status: " + status);
+            l.i("plugged: " + plugged);
+            l.i("temperature: " + temperature);
 
             l.i("hack start");
             java.io.File hack_file = new java.io.File("/sys/class/power_supply/battery/charge_counter");
@@ -219,6 +224,8 @@ public class BatteryIndicatorService extends Service {
             /* Just treating any unplugged status as simply "Unplugged" now.
                Note that the main activity now assumes that the status is always 0, 2, or 5 */
             if (plugged == 0) status = 0; /* TODO: use static class CONSTANTS instead of numbers */
+
+            l.i("final plugged: " + plugged);
 
             String statusStr = str.statuses[status];
             if (status == 2) statusStr += " " + str.pluggeds[plugged]; /* Add '(AC)' or '(USB)' if charging */

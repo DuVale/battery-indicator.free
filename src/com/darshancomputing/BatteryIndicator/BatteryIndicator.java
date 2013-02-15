@@ -66,8 +66,8 @@ public class BatteryIndicator extends Activity {
     private Button battery_use_b;
     private Button upgrade_donate_b;
 
-    private static final String LTAG = "BatteryIndicatorActivity";
-    private L l = new L(LTAG);
+    private static final String LOG_TAG = "BatteryIndicatorActivity";
+    private L l = new L(LOG_TAG);
 
     private static final int DIALOG_CONFIRM_DISABLE_KEYGUARD = 0;
     private static final int DIALOG_CONFIRM_CLOSE = 1;
@@ -175,6 +175,29 @@ public class BatteryIndicator extends Activity {
         case R.id.menu_help:
             mStartActivity(HelpActivity.class);
             return true;
+        case R.id.menu_send_logs:
+            String logs;
+            try {
+                java.lang.Process process = Runtime.getRuntime().exec("logcat -s -d" +
+                                                                      " " + BatteryIndicatorService.LOG_TAG +
+                                                                      " " + BatteryIndicator.LOG_TAG);
+                process.waitFor();
+                java.io.InputStream is = process.getInputStream();
+                byte buf[] = new byte[is.available()];
+                is.read(buf);
+                logs = new String(buf);
+            } catch (Exception e) {
+                logs = "Sorry, something bad happened while trying to read logs...";
+                e.printStackTrace();
+            }
+
+            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+            String aEmailList[] = { "battery-indicator-support@darshancomputing.com" };
+            emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, aEmailList);
+            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Battery Indicator Diagnostic Logs");
+            emailIntent.setType("plain/text");
+            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, logs);
+            startActivity(emailIntent);
         default:
             return super.onOptionsItemSelected(item);
         }
