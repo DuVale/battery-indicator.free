@@ -180,12 +180,15 @@ public class BatteryIndicatorService extends Service {
                     /* These error messages are only really useful to me and might as well be left hardwired here in English. */
                     l.e("charge_counter file doesn't exist");
                     e.printStackTrace();
+                    l.e(Log.getStackTraceString(e));
                 } catch (java.io.IOException e) {
                     l.e("Error reading charge_counter file");
                     e.printStackTrace();
+                    l.e(Log.getStackTraceString(e));
                 } catch (NumberFormatException e) {
                     l.e("Read charge_counter file but couldn't convert contents to int");
                     e.printStackTrace();
+                    l.e(Log.getStackTraceString(e));
                 }
             } else {
                 l.i("hack file does NOT exist");
